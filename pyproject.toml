@@ -1,0 +1,16 @@
+[project]
+name = "rt-rihla-podcast"
+version = "0.1.0"
+description = "A podcast generator for Rihla fe Aldhakira on RT ARABIC channel."
+readme = "README.md"
+authors = [
+    { name = "trkee", email = "trkee@duck.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "feedgen>=1.0.0",
+    "httpx>=0.28.1",
+    "python-dotenv>=1.2.3",
+    "selectolax>=0.4.12",
+    "static-ffmpeg>=3.0",
+]
