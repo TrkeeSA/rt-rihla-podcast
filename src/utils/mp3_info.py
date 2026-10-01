@@ -1,4 +1,4 @@
-import requests
+import httpx
 import static_ffmpeg
 import subprocess
 
@@ -10,9 +10,12 @@ def get_mp3_duration(url):
         "-of", "csv=p=0", url
     ], timeout=30)
 
-    time = int(out)
-    return time
+    duration = float(out.decode().strip())
+    return int(duration)
 
 def get_mp3_size(url):
-    response = requests.head(url)
-    return int(response.headers.get('Content-Length', 0))
+    try:
+        response = httpx.head(url, timeout=10, follow_redirects=True, verify=False)
+        return int(response.headers.get('Content-Length', 0))
+    except Exception:
+        return 0
