@@ -12,10 +12,12 @@ def generate_rss():
 
     fg.load_extension('podcast')
 
-    fg.title(content["title"])
     fg.id(content["id"])
+    fg.title(content["title"])
     fg.description(content["description"])
-    fg.link(href=content["link"])
+    fg.link(href=content["link"], rel='alternate')
+    rss_url = content["link"] + '/podcast.rss'
+    fg.link(href=rss_url, rel='self', type='application/rss+xml')
     fg.logo(content["image"])
     fg.language('ar')
     fg.author(name=content["author"])

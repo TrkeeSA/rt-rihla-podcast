@@ -40,7 +40,11 @@ async def update_episodes(last_ep):
                 summary = summary_node.text() if summary_node else ""
                 date = parse_date(date_node.text()) if date_node else ""
 
-                if not audio_url or (last_ep is None) or (last_ep >= date):
+                if (last_ep is None) or (last_ep >= date):
+                    print("No new episodes to add.")
+                    break
+                
+                if not audio_url:
                     continue
 
                 audio_duration = await asyncio.to_thread(get_mp3_duration, audio_url)
