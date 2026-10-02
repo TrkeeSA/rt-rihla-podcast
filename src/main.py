@@ -1,8 +1,10 @@
 import asyncio
 from update import update_episodes
+from db import last_episode
 
-def main():
-    asyncio.run(update_episodes())
+def main(le):
+    asyncio.run(update_episodes(le))
 
 if __name__ == "__main__":
-    main()
+    le = last_episode()
+    main(le)
