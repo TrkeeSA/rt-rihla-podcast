@@ -4,6 +4,7 @@ import httpx
 from selectolax.parser import HTMLParser
 from dotenv import load_dotenv
 from db import add_episode, last_episode as get_last_episode
+from generate_rss import generate_rss
 from utils.mp3_info import get_mp3_duration, get_mp3_size
 from utils.date_parse import parse_date
 
@@ -15,7 +16,13 @@ api_url = f"{base_url}{episode_url}"
 max_results = 230
 
 async def update_episodes(last_ep):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+    there_is_new_ep = False
+    timeout = httpx.Timeout(30.0, connect=15.0)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    }
+
+    async with httpx.AsyncClient(follow_redirects=True, timeout=timeout, headers=headers) as client:
         for i in range(max_results):
             episode_card = await client.get(f"{base_url}/{episode_url}{i}")
 
@@ -55,11 +62,21 @@ async def update_episodes(last_ep):
                     title, summary, audio_url, audio_duration, audio_size, date
                     )
                 
+                there_is_new_ep = True
                 last_ep = date
 
                 print(f"Episode added: {title} Successfully")
+            
             else:
                 raise Exception(f"Failed to retrieve episode details: {episode_card.status_code}")
+
+            await asyncio.sleep(5)
+
+        if there_is_new_ep:
+                print("Generating RSS feed...")
+                generate_rss()
+                print("RSS feed generated successfully.")
+
 
 if __name__ == "__main__":
     last_episode = get_last_episode()
