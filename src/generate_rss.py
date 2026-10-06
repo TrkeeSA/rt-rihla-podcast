@@ -1,5 +1,6 @@
 import json, os
 from feedgen.feed import FeedGenerator
+from utils.date_converter import format_date_for_rss
 from db import get_all_episodes
 
 def generate_rss():
@@ -34,7 +35,7 @@ def generate_rss():
         fe.description(episode['description'])
         fe.enclosure(episode['audio_url'], episode['size'], 'audio/mpeg')
         fe.podcast.itunes_duration(episode['duration'])
-        fe.pubDate(episode['pub_date'])
+        fe.pubDate(format_date_for_rss(episode['pub_date']))
 
     fg.rss_file('podcast.rss', pretty=True)
     print("RSS file generated successfully.")

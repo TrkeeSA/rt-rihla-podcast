@@ -5,7 +5,7 @@ from selectolax.parser import HTMLParser
 from dotenv import load_dotenv
 from db import add_episode
 from utils.mp3_info import get_mp3_duration, get_mp3_size
-from utils.date_parse import parse_date
+from utils.date_converter import parse_date
 
 load_dotenv()
 base_url = os.getenv("BASE_URL")

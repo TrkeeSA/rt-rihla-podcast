@@ -3,10 +3,10 @@ import asyncio
 import httpx
 from selectolax.parser import HTMLParser
 from dotenv import load_dotenv
-from db import add_episode, last_episode as get_last_episode
+from db import add_episode, check_episode_exists, last_episode as get_last_episode
 from generate_rss import generate_rss
 from utils.mp3_info import get_mp3_duration, get_mp3_size
-from utils.date_parse import parse_date
+from utils.date_converter import parse_date
 
 load_dotenv()
 base_url = os.getenv("BASE_URL")
@@ -48,7 +48,7 @@ async def update_episodes(last_ep):
                 date = parse_date(date_node.text()) if date_node else ""
 
                 if (last_ep is None) or (last_ep >= date):
-                    print("No new episodes to add.")
+                    print(f"No new episodes to add, last episode date in database: {last_ep}, last episode date in source: {date}")
                     break
                 
                 if not audio_url:
@@ -56,6 +56,13 @@ async def update_episodes(last_ep):
 
                 audio_duration = await asyncio.to_thread(get_mp3_duration, audio_url)
                 audio_size = await asyncio.to_thread(get_mp3_size, audio_url)
+
+                print(f"Adding episode: {title} with date: {date} and audio URL: {audio_url}")
+                
+                await asyncio.to_thread(
+                    check_episode_exists,
+                    audio_url
+                )
 
                 await asyncio.to_thread(
                     add_episode,

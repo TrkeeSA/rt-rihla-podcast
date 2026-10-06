@@ -48,6 +48,17 @@ def get_all_episodes():
         return cursor.fetchall()
 
 
+def check_episode_exists(audio_url):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT title, audio_url, pub_date FROM episodes WHERE audio_url = ?', (audio_url,))
+        result = cursor.fetchone()
+        if result:
+            print(f"Episode already exists: {result['title']}, Date: {result['pub_date']}")
+            return True
+        return False
+
+
 def last_episode():
     with get_connection() as conn:
         cursor = conn.cursor()
